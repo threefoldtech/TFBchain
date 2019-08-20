@@ -11,14 +11,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/threefoldtech/tfbchain/pkg/config" // TODO: add repo
-  tfbchaintypes "github.com/threefoldtech/tfbchain/pkg/types"
 	"github.com/threefoldtech/rivine/types"
+	"github.com/threefoldtech/tfbchain/pkg/config" // TODO: add repo
+	tfbchaintypes "github.com/threefoldtech/tfbchain/pkg/types"
 
-  "github.com/threefoldtech/rivine/extensions/minting"
+	"github.com/threefoldtech/rivine/extensions/minting"
 	mintingapi "github.com/threefoldtech/rivine/extensions/minting/api"
-
-	
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/threefoldtech/rivine/modules"
@@ -111,8 +109,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 		}
 
 		var cs modules.ConsensusSet
-    var mintingPlugin    *minting.Plugin
-		
+		var mintingPlugin *minting.Plugin
 
 		if moduleIdentifiers.Contains(daemon.ConsensusSetModule.Identifier()) {
 			printModuleIsLoading("consensus set")
@@ -133,12 +130,12 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-      // register the minting extension plugin
+			// register the minting extension plugin
 			mintingPlugin = minting.NewMintingPlugin(
 				setupNetworkCfg.GenesisMintCondition,
 				tfbchaintypes.MinterDefinitionTxVersion,
 				tfbchaintypes.CoinCreationTxVersion,
-        &minting.PluginOptions{
+				&minting.PluginOptions{
 					CoinDestructionTransactionVersion: tfbchaintypes.CoinDestructionTxVersion,
 				},
 			)
@@ -152,28 +149,6 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				cancel()
 				return
 			}
-			
-
-			// register the auth coin tx plugin
-			// > NOTE: this also overwrites the standard tx controllers!!!!
-			authCoinTxPlugin = authcointx.NewPlugin(
-				setupNetworkCfg.GenesisAuthCondition,
-				tfbchaintypes.TransactionVersionAuthAddressUpdateTx,
-				tfbchaintypes.TransactionVersionAuthConditionUpdateTx,
-				nil, // no custom opts
-			)
-			err = cs.RegisterPlugin(ctx, "authcointx", authCoinTxPlugin)
-			if err != nil {
-				servErrs <- fmt.Errorf("failed to register the auth coin tx extension: %v", err)
-				err = authCoinTxPlugin.Close() //make sure any resources are released
-				if err != nil {
-					fmt.Println("Error during closing of the authCoinTxPlugin :", err)
-				}
-				cancel()
-				return
-			}
-			// add the HTTP handlers for the auth coin tx extension as well
-			authcointxapi.RegisterConsensusAuthCoinHTTPHandlers(router, authCoinTxPlugin)
 		}
 
 		var tpool modules.TransactionPool
@@ -257,8 +232,8 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-      mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin)
-			
+			mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin)
+
 		}
 
 		fmt.Println("Setting up root HTTP API handler...")
@@ -328,8 +303,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 
 type setupNetworkConfig struct {
 	NetworkConfig        daemon.NetworkConfig
-  GenesisMintCondition types.UnlockConditionProxy
-	
+	GenesisMintCondition types.UnlockConditionProxy
 }
 
 // setupNetwork injects the correct chain constants and genesis nodes based on the chosen network,
@@ -342,42 +316,40 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
 	switch cfg.BlockchainInfo.NetworkName {
 	case config.NetworkNameStandard:
 		return setupNetworkConfig{}, errors.New("standard net is disabled for this chain, it is not ready for production") // TODO: enable and configure
-  case config.NetworkNameTest:
-    constants := config.GetTestnetGenesis()
-    genesisMintCondition := config.GetTestnetGenesisMintCondition()
-		
-    bootstrapPeers := cfg.BootstrapPeers
-    if len(bootstrapPeers) == 0 {
-      bootstrapPeers = config.GetTestnetBootstrapPeers()
-    }
-    // return the testnet genesis block and bootstrap peers
-    return setupNetworkConfig{
-      NetworkConfig: daemon.NetworkConfig{
-        Constants:      constants,
-        BootstrapPeers: bootstrapPeers,
-      },
-      GenesisMintCondition: genesisMintCondition,
-			
-    }, nil
-  
-  case config.NetworkNameDev:
-    constants := config.GetDevnetGenesis()
-    genesisMintCondition := config.GetDevnetGenesisMintCondition()
-		
-    bootstrapPeers := cfg.BootstrapPeers
-    if len(bootstrapPeers) == 0 {
-      bootstrapPeers = config.GetTestnetBootstrapPeers()
-    }
-    // return the testnet genesis block and bootstrap peers
-    return setupNetworkConfig{
-      NetworkConfig: daemon.NetworkConfig{
-        Constants:      constants,
-        BootstrapPeers: bootstrapPeers,
-      },
+	case config.NetworkNameTest:
+		constants := config.GetTestnetGenesis()
+		genesisMintCondition := config.GetTestnetGenesisMintCondition()
+
+		bootstrapPeers := cfg.BootstrapPeers
+		if len(bootstrapPeers) == 0 {
+			bootstrapPeers = config.GetTestnetBootstrapPeers()
+		}
+		// return the testnet genesis block and bootstrap peers
+		return setupNetworkConfig{
+			NetworkConfig: daemon.NetworkConfig{
+				Constants:      constants,
+				BootstrapPeers: bootstrapPeers,
+			},
 			GenesisMintCondition: genesisMintCondition,
-			
-    }, nil
-  
+		}, nil
+
+	case config.NetworkNameDev:
+		constants := config.GetDevnetGenesis()
+		genesisMintCondition := config.GetDevnetGenesisMintCondition()
+
+		bootstrapPeers := cfg.BootstrapPeers
+		if len(bootstrapPeers) == 0 {
+			bootstrapPeers = config.GetTestnetBootstrapPeers()
+		}
+		// return the testnet genesis block and bootstrap peers
+		return setupNetworkConfig{
+			NetworkConfig: daemon.NetworkConfig{
+				Constants:      constants,
+				BootstrapPeers: bootstrapPeers,
+			},
+			GenesisMintCondition: genesisMintCondition,
+		}, nil
+
 	default:
 		// network isn't recognised
 		return setupNetworkConfig{}, fmt.Errorf(
