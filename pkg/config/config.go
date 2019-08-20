@@ -51,13 +51,13 @@ func GetBlockchainInfo() types.BlockchainInfo {
 // GetStandardnetGenesis explicitly sets all the required constants for the genesis block of the standard (prod) net
 func GetStandardnetGenesis() types.ChainConstants {
 	cfg := types.StandardnetChainConstants()
-  return cfg
+	return cfg
 }
 
 // GetTestnetGenesis explicitly sets all the required constants for the genesis block of the testnet
 func GetTestnetGenesis() types.ChainConstants {
 	cfg := types.TestnetChainConstants()
-  
+
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
@@ -66,8 +66,8 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	cfg.MaturityDelay = 720
 
-  // The genesis timestamp
-  cfg.GenesisTimestamp = types.Timestamp(1566295200)
+	// The genesis timestamp
+	cfg.GenesisTimestamp = types.Timestamp(1566295200)
 
 	cfg.TargetWindow = 1000
 
@@ -85,32 +85,29 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(0.1 * 100)
 
+	// allocate block stakes
+	cfg.GenesisCoinDistribution = []types.CoinOutput{
+		{
+			Value:     cfg.CurrencyUnits.OneCoin.Mul64(200 * 1000 * 1000),
+			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf"))),
+		},
+	}
 
 	// allocate block stakes
-  cfg.GenesisCoinDistribution = []types.CoinOutput{
-    {
-        Value: cfg.CurrencyUnits.OneCoin.Mul64(2000000000000000),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf"))),
-      },
-    
-  }
+	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+		{
+			Value:     types.NewCurrency64(2000),
+			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf"))),
+		},
+	}
 
-  // allocate block stakes
-  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-    {
-      Value:     types.NewCurrency64(2000),
-      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf"))),
-    },
-    
-  }
-
-  return cfg
+	return cfg
 }
 
 // GetDevnetGenesis explicitly sets all the required constants for the genesis block of the devnet
 func GetDevnetGenesis() types.ChainConstants {
 	cfg := types.DevnetChainConstants()
-  
+
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
@@ -119,8 +116,8 @@ func GetDevnetGenesis() types.ChainConstants {
 
 	cfg.MaturityDelay = 10
 
-  // The genesis timestamp
-  cfg.GenesisTimestamp = types.Timestamp(1566295200)
+	// The genesis timestamp
+	cfg.GenesisTimestamp = types.Timestamp(1566295200)
 
 	cfg.TargetWindow = 20
 
@@ -138,53 +135,47 @@ func GetDevnetGenesis() types.ChainConstants {
 
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(0.1 * 100)
 
+	// allocate block stakes
+	cfg.GenesisCoinDistribution = []types.CoinOutput{
+		{
+			Value: cfg.CurrencyUnits.OneCoin.Mul64(200 * 1000 * 1000),
+			// belong to wallet with mnemonic:
+			// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
+			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
+		},
+	}
 
 	// allocate block stakes
-  cfg.GenesisCoinDistribution = []types.CoinOutput{
-    {
-        Value: cfg.CurrencyUnits.OneCoin.Mul64(2000000000000000),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
-      },
-    
-  }
+	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+		{
+			Value: types.NewCurrency64(2000),
+			// belong to wallet with mnemonic:
+			// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
+			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
+		},
+	}
 
-  // allocate block stakes
-  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-    {
-      Value:     types.NewCurrency64(2000),
-      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
-    },
-    
-  }
-
-  return cfg
+	return cfg
 }
-
-
 
 // GetStandardnetBootstrapPeers sets the standard bootstrap node addresses
 func GetStandardnetBootstrapPeers() []modules.NetAddress {
-	return []modules.NetAddress{
-    
-	}
+	return []modules.NetAddress{}
 }
 
 // GetTestnetGenesisAuthCoinCondition returns the genesis auth condition used for the testnet
 
-
 // GetTestnetBootstrapPeers sets the testnet bootstrap node addresses
 func GetTestnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-    "bootstrap1.testnet.tfb.threefold.tech:21112",
-    "bootstrap2.testnet.tfb.threefold.tech:21112",
-    "bootstrap3.testnet.tfb.threefold.tech:21112",
-    "bootstrap4.testnet.tfb.threefold.tech:21112",
-    
+		"bootstrap1.testnet.tfb.threefold.tech:21112",
+		"bootstrap2.testnet.tfb.threefold.tech:21112",
+		"bootstrap3.testnet.tfb.threefold.tech:21112",
+		"bootstrap4.testnet.tfb.threefold.tech:21112",
 	}
 }
 
 // GetDevnetGenesisAuthCoinCondition returns the genesis auth condition used for the devnet
-
 
 // GetDevnetBootstrapPeers sets the default devnet bootstrap node addresses
 func GetDevnetBootstrapPeers() []modules.NetAddress {
