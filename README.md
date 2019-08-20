@@ -30,10 +30,10 @@ As this wallet is recovered as a plain wallet it does not have to be unlocked an
 $ tfbchainc wallet
 Wallet status:
 Encrypted, Unlocked
-Confirmed Balance:   100006530 GFT
-Locked Balance:      0 GFT
-Unconfirmed Delta:   + 0 GFT
-BlockStakes:         3000 BS
+Confirmed Balance:   100006530 TFB
+Locked Balance:      0 TFB
+Unconfirmed Delta:   + 0 TFB
+BlockStakes:         2000 BS
 ```
 
 Please consult the `--help` menus of the `tfbchainc` command and all its subcommands for more information on how to use the CLI.
