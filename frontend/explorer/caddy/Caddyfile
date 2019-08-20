@@ -1,8 +1,8 @@
-http://explorer.testnet.tfb.threefoldtoken.com {
-    redir https://explorer.testnet.tfb.threefoldtoken.com
+http://explorer.testnet.tfb.threefold.tech {
+    redir https://explorer.testnet.tfb.threefold.tech
 }
 
-https://explorer.testnet.tfb.threefoldtoken.com {
+https://explorer.testnet.tfb.threefold.tech {
     root ../public
 
     header / {
@@ -20,5 +20,5 @@ https://explorer.testnet.tfb.threefoldtoken.com {
     }
 
     log stdout
-    tls support@nbh-digital.com
+    tls support@threefold.tech
 }
