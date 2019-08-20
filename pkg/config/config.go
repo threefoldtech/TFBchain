@@ -71,7 +71,7 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	cfg.TargetWindow = 1000
 
-	cfg.MaxAdjustmentUp = big.NewRat(10, 25)
+	cfg.MaxAdjustmentUp = big.NewRat(25, 10)
 	cfg.MaxAdjustmentDown = big.NewRat(10, 25)
 
 	cfg.FutureThreshold = 120
@@ -121,8 +121,8 @@ func GetDevnetGenesis() types.ChainConstants {
 
 	cfg.TargetWindow = 20
 
-	cfg.MaxAdjustmentUp = big.NewRat(10, 25)
-	cfg.MaxAdjustmentDown = big.NewRat(10, 25)
+	cfg.MaxAdjustmentUp = big.NewRat(120, 100)
+	cfg.MaxAdjustmentDown = big.NewRat(100, 120)
 
 	cfg.FutureThreshold = 120
 	cfg.ExtremeFutureThreshold = 240
