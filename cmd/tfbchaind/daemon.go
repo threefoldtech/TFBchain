@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/threefoldtech/TFBchain/pkg/config" // TODO: add repo
+	tfbchaintypes "github.com/threefoldtech/TFBchain/pkg/types"
 	"github.com/threefoldtech/rivine/types"
-	"github.com/threefoldtech/tfbchain/pkg/config" // TODO: add repo
-	tfbchaintypes "github.com/threefoldtech/tfbchain/pkg/types"
 
 	"github.com/threefoldtech/rivine/extensions/minting"
 	mintingapi "github.com/threefoldtech/rivine/extensions/minting/api"

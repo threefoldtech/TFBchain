@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/threefoldtech/tfbchain/pkg/config"
+	"github.com/threefoldtech/TFBchain/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/threefoldtech/rivine/pkg/cli"
 	"github.com/threefoldtech/rivine/pkg/daemon"

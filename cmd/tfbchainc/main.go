@@ -7,8 +7,8 @@ import (
 	"github.com/threefoldtech/rivine/pkg/cli"
 	"github.com/threefoldtech/rivine/pkg/daemon"
 
-	"github.com/threefoldtech/tfbchain/pkg/config"
-	"github.com/threefoldtech/tfbchain/pkg/types"
+	"github.com/threefoldtech/TFBchain/pkg/config"
+	"github.com/threefoldtech/TFBchain/pkg/types"
 	mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"
 	
 

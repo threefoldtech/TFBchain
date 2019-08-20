@@ -137,17 +137,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:921d78c1f68426982c6dad4e3d90ec0329084b39b1a891a1d6dd5a14f38e3caf"
-  name = "github.com/threefoldtech/tfbchain"
-  packages = [
-    "pkg/config",
-    "pkg/types",
-  ]
-  pruneopts = "UT"
-  revision = "791d027ca3895a9b804198833057684f1ae9e9ca"
-
-[[projects]]
-  branch = "master"
   digest = "1:7e02a7510d1d89eacdf48b2e4673b365fc5d195395c2af9d16dea4f54b997792"
   name = "github.com/tyler-smith/go-bip39"
   packages = [
@@ -268,8 +257,6 @@
     "github.com/threefoldtech/rivine/pkg/client",
     "github.com/threefoldtech/rivine/pkg/daemon",
     "github.com/threefoldtech/rivine/types",
-    "github.com/threefoldtech/tfbchain/pkg/config",
-    "github.com/threefoldtech/tfbchain/pkg/types",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

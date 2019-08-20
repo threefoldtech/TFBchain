@@ -8,7 +8,7 @@ import (
 	"github.com/threefoldtech/rivine/pkg/client"
 	"github.com/threefoldtech/rivine/types"
 
-  tfbchaintypes "github.com/threefoldtech/tfbchain/pkg/types"
+  tfbchaintypes "github.com/threefoldtech/TFBchain/pkg/types"
 )
 
 // RegisterStandardTransactions registers the tfbchain-specific transactions as required for the standard network.
