@@ -70,16 +70,16 @@ func GetDevnetGenesis() types.ChainConstants {
 	cfg.MaxAdjustmentUp = big.NewRat(120, 100)
 	cfg.MaxAdjustmentDown = big.NewRat(100, 120)
 
-	cfg.FutureThreshold = 120000000000
-	cfg.ExtremeFutureThreshold = 180000000000
+	cfg.FutureThreshold = 120
+	cfg.ExtremeFutureThreshold = 240
 
-	cfg.StakeModifierDelay = 2000000000000
+	cfg.StakeModifierDelay = 2000
 
 	// Time it takes before transferred blockstakes can be used
-	cfg.BlockStakeAging = 1024000000000
+	cfg.BlockStakeAging = 1024
 
 	// Coins you receive when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(0)// Minimum transaction fee
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(1)// Minimum transaction fee
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(10)
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f")))
 	
@@ -136,16 +136,16 @@ func GetTestnetGenesis() types.ChainConstants {
 	cfg.MaxAdjustmentUp = big.NewRat(25, 10)
 	cfg.MaxAdjustmentDown = big.NewRat(10, 25)
 
-	cfg.FutureThreshold = 3000000000
-	cfg.ExtremeFutureThreshold = 6000000000
+	cfg.FutureThreshold = 120
+	cfg.ExtremeFutureThreshold = 600
 
-	cfg.StakeModifierDelay = 20000000000
+	cfg.StakeModifierDelay = 2000
 
 	// Time it takes before transferred blockstakes can be used
-	cfg.BlockStakeAging = 1024000000000
+	cfg.BlockStakeAging = 64
 
 	// Coins you receive when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(0)// Minimum transaction fee
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(1)// Minimum transaction fee
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(10)
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf")))
 	
