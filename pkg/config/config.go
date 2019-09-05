@@ -55,6 +55,10 @@ func GetDevnetGenesis() types.ChainConstants {
 	cfg.DefaultTransactionVersion = types.TransactionVersion(1)
 	cfg.GenesisTransactionVersion = types.TransactionVersion(1)
 
+	// size limits
+	cfg.BlockSizeLimit = 2000000
+	cfg.ArbitraryDataSizeLimit = 83
+
 	// block time
 	cfg.BlockFrequency = 12
 
@@ -63,6 +67,8 @@ func GetDevnetGenesis() types.ChainConstants {
 
 	// The genesis timestamp
 	cfg.GenesisTimestamp = types.Timestamp(1566295200)
+
+	cfg.MedianTimestampWindow = 11
 
 	// block window for difficulty
 	cfg.TargetWindow = 20
@@ -83,6 +89,13 @@ func GetDevnetGenesis() types.ChainConstants {
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(10)
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f")))
 	
+
+	// Set Transaction Pool config
+	cfg.TransactionPool = types.TransactionPoolConstants{
+		TransactionSizeLimit:    16000,
+		TransactionSetSizeLimit: 250000,
+		PoolSizeLimit:           19750000,
+	}
 
 	// allocate initial coin outputs
 	cfg.GenesisCoinDistribution = []types.CoinOutput{ 
@@ -121,6 +134,10 @@ func GetTestnetGenesis() types.ChainConstants {
 	cfg.DefaultTransactionVersion = types.TransactionVersion(1)
 	cfg.GenesisTransactionVersion = types.TransactionVersion(1)
 
+	// size limits
+	cfg.BlockSizeLimit = 2000000
+	cfg.ArbitraryDataSizeLimit = 83
+
 	// block time
 	cfg.BlockFrequency = 120
 
@@ -129,6 +146,8 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	// The genesis timestamp
 	cfg.GenesisTimestamp = types.Timestamp(1566295200)
+
+	cfg.MedianTimestampWindow = 11
 
 	// block window for difficulty
 	cfg.TargetWindow = 1000
@@ -149,6 +168,13 @@ func GetTestnetGenesis() types.ChainConstants {
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(10)
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("012baf6a2019b8184328f9ddc13e8aa6484c3272d98411444bdd743e9bb62e3572568ce6dc63bf")))
 	
+
+	// Set Transaction Pool config
+	cfg.TransactionPool = types.TransactionPoolConstants{
+		TransactionSizeLimit:    16000,
+		TransactionSetSizeLimit: 250000,
+		PoolSizeLimit:           19750000,
+	}
 
 	// allocate initial coin outputs
 	cfg.GenesisCoinDistribution = []types.CoinOutput{ 
