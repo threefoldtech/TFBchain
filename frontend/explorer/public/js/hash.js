@@ -9,7 +9,20 @@ function appendTransactionStatistics(infoBody, explorerTransaction, confirmed) {
 			appendV1Transaction(infoBody, explorerTransaction, confirmed);
 			break;
 
-		// TODO: support extra versions if needed
+		
+		// Minting Transactions
+		case 128: // Condition Update Tx
+			appendV128Transaction(infoBody, explorerTransaction, confirmed);
+			break;
+		case 129: // Coin Creation Tx
+			appendV129Transaction(infoBody, explorerTransaction, confirmed);
+			break;
+		case 130: // Optional Coin Destruction Tx
+			appendV130Transaction(infoBody, explorerTransaction, confirmed);
+			break;
+		
+
+		
 
 		default:
 			appendUnknownTransaction(infoBody, explorerTransaction, confirmed)
@@ -67,7 +80,7 @@ function appendV0Transaction(infoBody, explorerTransaction, confirmed) {
 		appendStat(table, 'Blockstake Output Count', explorerTransaction.rawtransaction.data.blockstakeoutputs.length);
 	}
 	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
-		appendStat(table, 'Arbitrary Data Byte Count',  b64DecodeUnicode(explorerTransaction.rawtransaction.data.arbitrarydata).length);
+		appendStat(table, 'Arbitrary Data Byte Count',  decodeBase64ArrayBuffer(explorerTransaction.rawtransaction.data.arbitrarydata).length);
 	}
 	infoBody.appendChild(table);
 
@@ -154,7 +167,7 @@ function appendV0Transaction(infoBody, explorerTransaction, confirmed) {
 	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
 		appendStatTableTitle(infoBody, 'Arbitrary Data');
 		var table = createStatsTable();
-		appendStat(table, 'Base64-encoded Data', explorerTransaction.rawtransaction.data.arbitrarydata);
+		appendStat(table, 'data', arbitraryDataToString(explorerTransaction.rawtransaction.data.arbitrarydata));
 		infoBody.appendChild(table);
 	}
 	if (confirmed) {
@@ -204,7 +217,7 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 		appendStat(table, 'Blockstake Output Count', explorerTransaction.rawtransaction.data.blockstakeoutputs.length);
 	}
 	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
-		appendStat(table, 'Arbitrary Data Byte Count',  b64DecodeUnicode(explorerTransaction.rawtransaction.data.arbitrarydata).length);
+		appendStat(table, 'Arbitrary Data Byte Count',  decodeBase64ArrayBuffer(explorerTransaction.rawtransaction.data.arbitrarydata).length);
 	}
 	infoBody.appendChild(table);
 
@@ -227,7 +240,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Input;
 					break;
-				// TODO: support extra inputs if needed
 				default:
 					continue;
 			}
@@ -257,7 +269,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 4:
 					f = addV1T4Output;
 					break;
-					// TODO: support extra outputs if needed
 				default:
 					continue;
 			}
@@ -283,7 +294,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Input;
 					break;
-				// TODO: support extra inputs if needed
 			}
 			f(infoBody, explorerTransaction, i, 'blockstakes');
 		}
@@ -304,7 +314,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Output;
 					break;
-				// TODO: support extra outputs if needed
 			}
 			var outputTable = createStatsTable()
 			f(ctx, outputTable, explorerTransaction, i, 'blockstakes');
@@ -314,7 +323,7 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
 		appendStatTableTitle(infoBody, 'Arbitrary Data');
 		var table = createStatsTable();
-		appendStat(table, 'Base64-encoded Data', explorerTransaction.rawtransaction.data.arbitrarydata);
+		appendStat(table, 'data', arbitraryDataToString(explorerTransaction.rawtransaction.data.arbitrarydata));
 		infoBody.appendChild(table);
 	}
 	if (confirmed) {
@@ -334,6 +343,317 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 		}
 	}
 }
+
+// Minting Transactions
+
+function appendV128Transaction(infoBody, explorerTransaction, confirmed) {
+	var ctx = getBlockchainContext();
+
+	var table = createStatsTable();
+	appendStatHeader(table, 'Minter Definition Transaction Statistics');
+	if (confirmed) {
+		var doms = appendStat(table, 'Block Height', '');
+		linkHeight(doms[2], explorerTransaction.height);
+		doms = appendStat(table, 'Block ID', '');
+		linkHash(doms[2], explorerTransaction.parent);
+		appendStat(table, 'Confirmations', ctx.height - explorerTransaction.height + 1);
+	} else {
+		doms = appendStat(table, 'Block Height', 'unconfirmed');
+	}
+	doms = appendStat(table, 'ID', '');
+	linkHash(doms[2], explorerTransaction.id);
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStat(table, 'Arbitrary Data Byte Count',  decodeBase64ArrayBuffer(explorerTransaction.rawtransaction.data.arbitrarydata).length);
+	}
+	infoBody.appendChild(table);
+
+	appendStatTableTitle(infoBody, 'Minter Definition Fulfillment');
+	switch (explorerTransaction.rawtransaction.data.mintfulfillment.type) {
+		case 0:
+			break;
+		case 1:
+			f = addV1Fulfillment;
+			break;
+		case 2:
+			f = addV2Fulfillment;
+			break;
+		case 3:
+			f = addV3Fulfillment;
+			break;
+		default:
+			f = addUnknownFulfillment;
+	}
+	var table = createStatsTable();
+	f(table, explorerTransaction.rawtransaction.data.mintfulfillment);
+	infoBody.appendChild(table);
+
+	appendStatTableTitle(infoBody, 'New Mint Condition');
+	switch (explorerTransaction.rawtransaction.data.mintcondition.type) {
+		case undefined:
+		case 0:
+			f = addVNilCondition;
+			break;
+		case 1:
+			f = addV1Condition;
+			break;
+		case 2:
+			f = addV2Condition;
+			break;
+		case 3:
+			f = addV3Condition;
+			break;
+		case 4:
+			f = addV4Condition;
+			break;
+		default:
+			f = addUnknownCondition;
+	}
+	var table = createStatsTable();
+	f(ctx, table, explorerTransaction.rawtransaction.data.mintcondition.data, null);
+	infoBody.appendChild(table);
+
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStatTableTitle(infoBody, 'Arbitrary Data');
+		var table = createStatsTable();
+		appendStat(table, 'data', arbitraryDataToString(explorerTransaction.rawtransaction.data.arbitrarydata));
+		infoBody.appendChild(table);
+	}
+
+	if (confirmed) {
+		var payouts = getMinerFeesAsFeePayouts(explorerTransaction.id, explorerTransaction.parent);
+		if (payouts != null) {
+			// In a loop, add a new table for each miner payout.
+			appendStatTableTitle(infoBody, 'Transaction Fee Payouts');
+			for (var i = 0; i < payouts.length; i++) {
+				var table = createStatsTable();
+				var doms = appendStat(table, 'ID', '');
+				linkHash(doms[2], payouts[i].id);
+				doms = appendStat(table, 'Payout Address', '');
+				linkHash(doms[2], payouts[i].unlockhash);
+				appendStat(table, 'Value', readableCoins(payouts[i].paidvalue) + ' of a total payout of ' + readableCoins(payouts[i].value));
+				infoBody.appendChild(table);
+			}
+		}
+	}
+}
+
+function appendV129Transaction(infoBody, explorerTransaction, confirmed) {
+	var ctx = getBlockchainContext();
+
+	var table = createStatsTable();
+	appendStatHeader(table, 'Coin Creation Transaction Statistics');
+	if (confirmed) {
+		var doms = appendStat(table, 'Block Height', '');
+		linkHeight(doms[2], explorerTransaction.height);
+		doms = appendStat(table, 'Block ID', '');
+		linkHash(doms[2], explorerTransaction.parent);
+		appendStat(table, 'Confirmations', ctx.height - explorerTransaction.height + 1);
+	} else {
+		doms = appendStat(table, 'Block Height', 'unconfirmed');
+	}
+	doms = appendStat(table, 'ID', '');
+	linkHash(doms[2], explorerTransaction.id);
+	appendStat(table, 'Coin Output Count', explorerTransaction.rawtransaction.data.coinoutputs.length);
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStat(table, 'Arbitrary Data Byte Count',  decodeBase64ArrayBuffer(explorerTransaction.rawtransaction.data.arbitrarydata).length);
+	}
+	infoBody.appendChild(table);
+
+	appendStatTableTitle(infoBody, 'Coin Creation Fulfillment');
+	switch (explorerTransaction.rawtransaction.data.mintfulfillment.type) {
+		case 0:
+			break;
+		case 1:
+			f = addV1Fulfillment;
+			break;
+		case 2:
+			f = addV2Fulfillment;
+			break;
+		case 3:
+			f = addV3Fulfillment;
+			break;
+		default:
+			f = addUnknownFulfillment;
+	}
+	var table = createStatsTable();
+	f(table, explorerTransaction.rawtransaction.data.mintfulfillment);
+	infoBody.appendChild(table);
+
+	appendStatTableTitle(infoBody, 'Coin Creation Outputs');
+	var coinoutputs = getCoinOutputsFromExplorerTransaction(explorerTransaction);
+	for (var i = 0; i < coinoutputs.length; i++) {
+		var f;
+		switch (coinoutputs[i].condition.type) {
+			// handle nil transactions
+			case undefined:
+			case 0:
+				f = addV1NilOutput;
+				break;
+			case 1:
+				f = addV1T1Output;
+				break;
+			case 2:
+				f = addV1T2Output;
+				break;
+			case 3:
+				f = addV1T3Output;
+				break;
+			case 4:
+				f = addV1T4Output;
+				break;
+			default:
+				continue;
+		}
+		var outputTable = createStatsTable();
+		f(ctx, outputTable, explorerTransaction, i, 'coins', coinoutputs);
+		infoBody.appendChild(outputTable)
+	}
+
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStatTableTitle(infoBody, 'Arbitrary Data');
+		var table = createStatsTable();
+		appendStat(table, 'data', arbitraryDataToString(explorerTransaction.rawtransaction.data.arbitrarydata));
+		infoBody.appendChild(table);
+	}
+
+	if (confirmed) {
+		var payouts = getMinerFeesAsFeePayouts(explorerTransaction.id, explorerTransaction.parent);
+		if (payouts != null) {
+			// In a loop, add a new table for each miner payout.
+			appendStatTableTitle(infoBody, 'Transaction Fee Payouts');
+			for (var i = 0; i < payouts.length; i++) {
+				var table = createStatsTable();
+				var doms = appendStat(table, 'ID', '');
+				linkHash(doms[2], payouts[i].id);
+				doms = appendStat(table, 'Payout Address', '');
+				linkHash(doms[2], payouts[i].unlockhash);
+				appendStat(table, 'Value', readableCoins(payouts[i].paidvalue) + ' of a total payout of ' + readableCoins(payouts[i].value));
+				infoBody.appendChild(table);
+			}
+		}
+	}
+}
+
+function appendV130Transaction(infoBody, explorerTransaction, confirmed) {
+	var ctx = getBlockchainContext();
+
+	var table = createStatsTable();
+	appendStatHeader(table, 'Burn Transaction Statistics');
+	if (confirmed) {
+		var doms = appendStat(table, 'Block Height', '');
+		linkHeight(doms[2], explorerTransaction.height);
+		doms = appendStat(table, 'Block ID', '');
+		linkHash(doms[2], explorerTransaction.parent);
+		appendStat(table, 'Confirmations', ctx.height - explorerTransaction.height + 1);
+	} else {
+		doms = appendStat(table, 'Block Height', 'unconfirmed');
+	}
+	doms = appendStat(table, 'ID', '');
+	linkHash(doms[2], explorerTransaction.id);
+	if (explorerTransaction.rawtransaction.data.coininputs != null && explorerTransaction.rawtransaction.data.coininputs.length > 0) {
+		appendStat(table, 'Coin Input Count', explorerTransaction.rawtransaction.data.coininputs.length);
+	}
+	if (explorerTransaction.rawtransaction.data.refundcoinoutput != null) {
+		appendStat(table, 'Refund Coin Output', 'yes');
+	}
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStat(table, 'Arbitrary Data Byte Count',  decodeBase64ArrayBuffer(explorerTransaction.rawtransaction.data.arbitrarydata).length);
+	}
+	infoBody.appendChild(table);
+
+	var coinsBurnedAmount = 0;
+
+	// Add tables for each type of transaction element.
+	if (explorerTransaction.rawtransaction.data.coininputs != null
+		&& explorerTransaction.rawtransaction.data.coininputs.length > 0) {
+
+		appendStatTableTitle(infoBody, 'Coin Inputs');
+		for (var i = 0; i < explorerTransaction.rawtransaction.data.coininputs.length; i++) {
+			var f;
+			var cir;
+			switch (explorerTransaction.rawtransaction.data.coininputs[i].fulfillment.type) {
+				case 0:
+					break;
+				case 1:
+					f = addV1T1Input;
+					break;
+				case 2:
+					f = addV1T2Input;
+					break;
+				case 3:
+					f = addV1T3Input;
+					break;
+				default:
+					continue;
+			}
+			cir = f(infoBody, explorerTransaction, i, 'coins');
+			coinsBurnedAmount += +cir.amount;
+		}
+	}
+	var refundcoinoutput = explorerTransaction.rawtransaction.data.refundcoinoutput;
+	if (refundcoinoutput != null) {
+		appendStatTableTitle(infoBody, 'Refund Coin Output');
+		var f;
+		var cor;
+		switch (refundcoinoutput.condition.type) {
+			// handle nil transactions
+			case undefined:
+			case 0:
+				f = addV1NilOutput;
+				break;
+			case 1:
+				f = addV1T1Output;
+				break;
+			case 2:
+				f = addV1T2Output;
+				break;
+			case 3:
+				f = addV1T3Output;
+				break;
+			case 4:
+				f = addV1T4Output;
+				break;
+		}
+		if (f !== null) {
+			var outputTable = createStatsTable()
+			cor = f(ctx, outputTable, explorerTransaction, 0, 'coins', [refundcoinoutput]);
+			infoBody.appendChild(outputTable)
+			coinsBurnedAmount -= +cor.value;
+		}
+	}
+	if (explorerTransaction.rawtransaction.data.arbitrarydata != null) {
+		appendStatTableTitle(infoBody, 'Arbitrary Data');
+		var table = createStatsTable();
+		appendStat(table, 'data', arbitraryDataToString(explorerTransaction.rawtransaction.data.arbitrarydata));
+		infoBody.appendChild(table);
+	}
+	if (explorerTransaction.rawtransaction.data.minerfees != null && explorerTransaction.rawtransaction.data.minerfees.length > 0) {
+		for(var i = 0; i < explorerTransaction.rawtransaction.data.minerfees.length; i++) {
+			coinsBurnedAmount -= +explorerTransaction.rawtransaction.data.minerfees[i]
+		}
+	}
+	appendStatTableTitle(infoBody, 'Coins Burned');
+	var CoinsBurnedTable = createStatsTable();
+	infoBody.appendChild(CoinsBurnedTable);
+	if (confirmed) {
+		var payouts = getMinerFeesAsFeePayouts(explorerTransaction.id, explorerTransaction.parent);
+		if (payouts != null) {
+			// In a loop, add a new table for each miner payout.
+			appendStatTableTitle(infoBody, 'Transaction Fee Payouts');
+			for (var i = 0; i < payouts.length; i++) {
+				var table = createStatsTable();
+				var doms = appendStat(table, 'ID', '');
+				linkHash(doms[2], payouts[i].id);
+				doms = appendStat(table, 'Payout Address', '');
+				linkHash(doms[2], payouts[i].unlockhash);
+				appendStat(table, 'Value', readableCoins(payouts[i].paidvalue) + ' of a total payout of ' + readableCoins(payouts[i].value));
+				infoBody.appendChild(table);
+			}
+		}
+	}
+	appendStat(CoinsBurnedTable, 'Value', readableCoins(coinsBurnedAmount));
+}
+ 
 
 // *************
 // * V1 Inputs *
@@ -841,7 +1161,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;
@@ -945,10 +1264,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 		linkHash(doms[2], lastSpendTxID);
 	}
 
-	// TODO: Compile the list of file contracts and revisions that use the
-	// unlock hash, and that have the unlock hash somewhere in the payout
-	// scheme.
-
 	// Compile a set of transactions that have siafund outputs featuring
 	// the hash, along with the corresponding siafund output ids. Later,
 	// the transactions will be scanned again for siafund inputs sharing
@@ -1028,7 +1343,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;
@@ -1146,25 +1460,9 @@ function appendUnlockHashTables(domParent, hash, explorerHash) {
 			addressLabel = "Multisig Address";
 			break;
 	}
-	// auth authentication state
-	var authStatus = fetchCurrentAddressAuthStatus(hash);
-	var authStatusElement = null;
-	if (authStatus) {
-		authStatusElement = document.createElement('font');
-		authStatusElement.setAttribute('color', 'green');
-		authStatusElement.appendChild(document.createTextNode('(authorized)'));
-	} else {
-		authStatusElement = document.createElement('font');
-		authStatusElement.setAttribute('color', 'red');
-		authStatusElement.appendChild(document.createTextNode('(not authorized)'));
-	}
-	var spanAuthStatusElement = document.createElement('span');
-	spanAuthStatusElement.appendChild(document.createTextNode(' '));
-	spanAuthStatusElement.appendChild(authStatusElement);
-	// add title (with auth state)
+	// add title 
 	var titleHolder = document.createElement('h2');
 	titleHolder.appendChild(document.createTextNode(hashTitle));
-	titleHolder.appendChild(spanAuthStatusElement);
 	domParent.appendChild(titleHolder);
 	// add rest of content
 	var addressInfoTable = createStatsTable();
@@ -1400,7 +1698,6 @@ function appendCoinOutputTables(infoBody, hash, explorerHash) {
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;
@@ -1783,19 +2080,6 @@ function fetchHashInfo(hash) {
 		return 'error';
 	}
 	return JSON.parse(request.responseText);
-}
-
-// fetchCurrentAddressAuthStatus queries the explorer for auth status info at the current block height
-function fetchCurrentAddressAuthStatus(address) {
-	var request = new XMLHttpRequest();
-	var reqString = '/explorer/authcoin/address/' + address;
-	request.open('GET', reqString, false);
-	request.send();
-	if (request.status != 200) {
-		return 'error';
-	}
-	resp = JSON.parse(request.responseText) || {};
-	return resp.auth || false;
 }
 
 // parseHashQuery parses the query string in the URL and loads the block

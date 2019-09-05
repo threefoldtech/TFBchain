@@ -8,6 +8,7 @@ import (
 	"github.com/threefoldtech/rivine/pkg/daemon"
 
 	"github.com/threefoldtech/TFBchain/pkg/config"
+
 	"github.com/threefoldtech/TFBchain/pkg/types"
 	mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"
 	
@@ -31,10 +32,10 @@ func main() {
 	// add cli wallet extension commands
 	mintingcli.CreateWalletCmds(
 		cliClient.CommandLineClient,
-		types.MinterDefinitionTxVersion,
-		types.CoinCreationTxVersion,
+		types.TransactionVersionMinterDefinition,
+		types.TransactionVersionCoinCreation,
 		&mintingcli.WalletCmdsOpts{
-			CoinDestructionTxVersion: types.CoinDestructionTxVersion,
+			CoinDestructionTxVersion: types.TransactionVersionCoinDestruction,
 		},
 	)
 
@@ -44,27 +45,22 @@ func main() {
 	cliClient.PreRunE = func(cfg *client.Config) (*client.Config, error) {
 		if cfg == nil {
 			bchainInfo := config.GetBlockchainInfo()
-			chainConstants := config.GetStandardnetGenesis()
+			chainConstants := config.GetDefaultGenesis()
 			daemonConstants := modules.NewDaemonConstants(bchainInfo, chainConstants)
 			newCfg := client.ConfigFromDaemonConstants(daemonConstants)
 			cfg = &newCfg
 		}
 
 		switch cfg.NetworkName {
-		case config.NetworkNameStandard:
-			RegisterStandardTransactions(cliClient.CommandLineClient)
-
-			// overwrite standard network genesis block stamp,
-			// as the genesis block is way earlier than the actual first block,
-			// due to the hard reset at the bumpy/rough start
-      
-		case config.NetworkNameTest:
-			RegisterTestnetTransactions(cliClient.CommandLineClient)
-
-			// seems like testnet timestamp wasn't updated last time it was reset
-      
-		case config.NetworkNameDev:
+		
+		case config.NetworkNameDevnet:
 			RegisterDevnetTransactions(cliClient.CommandLineClient)
+			cfg.GenesisBlockTimestamp = 1566295200 // timestamp of block #1
+		
+		case config.NetworkNameTestnet:
+			RegisterTestnetTransactions(cliClient.CommandLineClient)
+			cfg.GenesisBlockTimestamp = 1566295200 // timestamp of block #1
+		
 
 		default:
 			return nil, fmt.Errorf("Network name %q not recognized", cfg.NetworkName)
