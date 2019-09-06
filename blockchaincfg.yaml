@@ -10,6 +10,7 @@ frontend:
 generation:
   ignore:
     - frontend/explorer/public/assets/icon.{ico,png}
+    - frontend/explorer/public/assets/mention.txt
 blockchain:
   name: tfbchain
   longName: Threefold Bonus
