@@ -12,6 +12,7 @@ generation:
     - frontend/explorer/public/assets/icon.{ico,png}
 blockchain:
   name: tfbchain
+  longName: Threefold Bonus
   repository: github.com/threefoldtech/TFBchain
   currency:
     unit: TFB

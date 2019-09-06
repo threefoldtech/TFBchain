@@ -1,6 +1,6 @@
-# tfbchain Blockchain
+# Threefold Bonus Blockchain
 
-The tfbchain Blockchain repository.
+The Threefold Bonus Blockchain repository.
 
 ## How to use tfbchainc
 
