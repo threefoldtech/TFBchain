@@ -7,6 +7,9 @@ frontend:
   caddy:
     dns: explorer.testnet.tfb.threefold.tech
     tls: support@threefold.tech
+generation:
+  ignore:
+    - frontend/explorer/public/assets/icon.{ico,png}
 blockchain:
   name: tfbchain
   repository: github.com/threefoldtech/TFBchain
