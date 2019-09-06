@@ -21,7 +21,7 @@ function addOptionalFooter() {
 
 	var commitLink = document.createElement('a')
 	commitLink.textContent = version
-	commitLink.href = github.com/threefoldtech/TFBchain + versionpath;
+	commitLink.href = "https://github.com/threefoldtech/TFBchain" + versionpath;
 	versionParagraph.appendChild(commitLink);
 }
 addOptionalFooter();
