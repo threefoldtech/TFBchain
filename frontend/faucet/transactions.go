@@ -6,19 +6,12 @@ import (
 	"fmt"
 	"log"
 
-	
+	tfbchaintypes "github.com/threefoldtech/TFBchain/pkg/types"
 	"github.com/threefoldtech/rivine/pkg/api"
 	"github.com/threefoldtech/rivine/types"
-  tfbchaintypes "github.com/threefoldtech/TFBchain/pkg/types"
-	
 )
 
-
-
-
-
 func dripCoins(address types.UnlockHash, amount types.Currency) (types.TransactionID, error) {
-	
 
 	data, err := json.Marshal(api.WalletCoinsPOST{
 		CoinOutputs: []types.CoinOutput{
@@ -41,5 +34,3 @@ func dripCoins(address types.UnlockHash, amount types.Currency) (types.Transacti
 	}
 	return resp.TransactionID, err
 }
-
-
