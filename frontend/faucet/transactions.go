@@ -2,11 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"log"
 
-	tfbchaintypes "github.com/threefoldtech/TFBchain/pkg/types"
 	"github.com/threefoldtech/rivine/pkg/api"
 	"github.com/threefoldtech/rivine/types"
 )
