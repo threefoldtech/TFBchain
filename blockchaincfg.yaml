@@ -2,9 +2,14 @@ template:
   repository: "github.com/threefoldtech/rivine-chain-template"
   version: master
 frontend:
-  caddy:
-    dns: explorer.testnet.tfb.threefold.tech
-    tls: support@threefold.tech
+  explorer:
+    caddy:
+      dns: explorer.testnet.tfb.threefold.tech
+      tls: support@threefold.tech
+  faucet:
+    caddy:
+      dns: faucet.testnet.tfb.threefold.tech
+      tls: support@threefold.tech
 generation:
   ignore:
     - frontend/explorer/public/assets/icon.{ico,png}
