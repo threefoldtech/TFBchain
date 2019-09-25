@@ -95,8 +95,8 @@ blockchain:
       targetWindow: 20
       maxAdjustmentUp: 120/100
       maxAdjustmentDown: 100/120
-      futureTreshold: 120
-      extremeFutureTreshold: 240
+      futureTreshold: 12
+      extremeFutureTreshold: 60
       stakeModifierDelay: 2000
       blockStakeAging: 1024
       transactionPool:
